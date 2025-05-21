@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToe  {
-    List<Integer> allowableStroke = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+    List<Integer> availableMoves = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
     boolean currentMove = true;
     private char[][] gameBoard = {
             {'1', '2', '3'},
@@ -22,26 +22,15 @@ public class TicTacToe  {
         }
     }
 
-    private boolean changePriory (boolean priority) {
-        return !priority;
-    }
-
     public void gameLogic () {
-        User[] users = {user1, user2};
-        User userCurrent = null;
 
         System.out.println("=========Welcome to TicTacToe=========");
         printPlayingField();
 
         while (true) {
-
-            for (User user : users) {
-                if (user.priorityPlay == currentMove) {
-                    userCurrent = user;
-                }
-            }
+            User userCurrent = currentMove ? user1 : user2;
             int numberInput = userInput(scanner);
-            allowableStroke.removeIf(n -> n == numberInput);
+            availableMoves.removeIf(n -> n == numberInput);
             char ch = (char) ('0' + numberInput);
             updateBoard(ch, userCurrent.markPlay);
             printPlayingField();
@@ -54,11 +43,11 @@ public class TicTacToe  {
                 break;
             }
 
-            if (drawTest()) {
+            if (isDraw()) {
                 System.out.println("Game Over, Draw.");
                 break;
             }
-            currentMove = changePriory(currentMove);
+            currentMove = !currentMove;
         }
         scanner.close();
     }
@@ -83,8 +72,8 @@ public class TicTacToe  {
         return false;
     }
 
-    private boolean drawTest() {
-        return allowableStroke.isEmpty();
+    private boolean isDraw () {
+        return availableMoves.isEmpty();
     }
 
     public void updateBoard (char target, char newValue) {
@@ -98,16 +87,20 @@ public class TicTacToe  {
         }
     }
 
+
     private int userInput(Scanner scanner) {
-        System.out.println("Enter number: ");
-        while(true) {
-            int inputBoardNumber = scanner.nextInt();
-            for (int x : allowableStroke) {
-                if (inputBoardNumber == x) {
-                    return x;
+        int input;
+        while (true) {
+            System.out.println("Enter number: ");
+            if (scanner.hasNextInt()) {
+                input = scanner.nextInt();
+                if (availableMoves.contains(input)) {
+                    return input;
                 }
+            } else {
+                scanner.next();
             }
-            System.out.println("Incorrect part board, try again.");
-            }
+            System.out.println("Invalid input, try again");
         }
+    }
 }
